@@ -1,0 +1,35 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: estate-rental-monitor
+  namespace: monitoring
+  labels:
+    release: monitoring
+spec:
+  # 1. Sélectionne les services à surveiller via leurs labels
+  selector:
+    matchExpressions:
+      - {
+          key: app,
+          operator: In,
+          values:
+            [
+              auth-server,
+              gateway-service,
+              user-management-service,
+              property-microservice,
+              notification-service,
+              rental-agreement-microservice,
+            ],
+        }
+
+  # 2. Cherche dans le namespace de vos apps
+  namespaceSelector:
+    matchNames:
+      - estate-rental
+
+  # 3. Définit l'endpoint à scraper
+  endpoints:
+    - port: http # Nom que vous avez ajouté dans vos Services K8s
+      path: /actuator/prometheus
+      interval: 15s

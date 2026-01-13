@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: estate-rental
+data:
+  SPRING_PROFILES_ACTIVE: "prod"
+  JAVA_TOOL_OPTIONS: "-Xms256m -Xmx512m"
+  CONFIG_SERVER_URL: "http://config-service:8888"
+  AUTH_SERVER_URL: "http://auth-server:9000"
+  USER_MANAGEMENT_SERVICE_URL: "http://user-management-service:8081"
+  RENTAL_AGREEMENT_URL: "http://rental-agreement-microservice:8083"
+  PROPERTY_MICROSERVICE_URL: "http://property-microservice:8084"
+  NOTIFICATION_MICROSERVICE_URL: "http://notification-service:8085"
+  # Default frontend URL, override in overlays if needed
+  FRONTEND_URL: "http://frontend-service:80" 
+  KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"

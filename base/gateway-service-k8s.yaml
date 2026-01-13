@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-service
+  namespace: estate-rental
+spec:
+  selector:
+    matchLabels:
+      app: gateway-service
+  template:
+    metadata:
+      labels:
+        app: gateway-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8880"
+    spec:
+      containers:
+        - name: gateway-service
+          image: yassinekamouss/gateway-service:latest
+          ports:
+            - containerPort: 8880
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "200m"
+            limits:
+              memory: "768Mi"
+              cpu: "500m"
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: SPRING_PROFILES_ACTIVE
+            - name: CONFIG_SERVER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: CONFIG_SERVER_URL
+            - name: AUTH_SERVER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: AUTH_SERVER_URL
+            - name: USER-MANAGEMENT-SERVICE-URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: USER_MANAGEMENT_SERVICE_URL
+            - name: RENTAL-AGREEMENT-URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: RENTAL_AGREEMENT_URL
+            - name: PROPERTY-MICROSERVICE-URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: PROPERTY_MICROSERVICE_URL
+            - name: NOTIFICATION_MICROSERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: NOTIFICATION_MICROSERVICE_URL
+            - name: FRONTEND_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: FRONTEND_URL
+            - name: JAVA_TOOL_OPTIONS
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: JAVA_TOOL_OPTIONS
+            - name: SPRING_CLOUD_GATEWAY_GLOBALCORS_CORS_CONFIGURATIONS_[/**]_ALLOWEDORIGINS[0]
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: FRONTEND_URL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service
+  namespace: estate-rental
+  labels: 
+    app: gateway-service
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8880
+      targetPort: 8880
+  selector:
+    app: gateway-service

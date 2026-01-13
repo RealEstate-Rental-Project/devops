@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: estate-rental-ingress
+  namespace: estate-rental
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    # --- OPTIMISATION : Gérer les groupes de sécurité AWS automatiquement ---
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+spec:
+  rules:
+    - http:
+        paths:
+          # 1. Le Frontend (Public App) : Route par défaut
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: public-app-service # Nom défini dans base/public-app-k8s.yaml
+                port:
+                  number: 4200 # Port de ton service frontend
+          
+          # 2. La Gateway (Backend) : Pour toutes les requêtes API
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway-service
+                port:
+                  number: 8880

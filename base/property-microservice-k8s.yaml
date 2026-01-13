@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: property-microservice
+  namespace: estate-rental
+spec:
+  selector:
+    matchLabels:
+      app: property-microservice
+  template:
+    metadata:
+      labels:
+        app: property-microservice
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8084"
+    spec:
+      containers:
+        - name: property-microservice
+          image: yassinekamouss/property-management-service:latest
+          ports:
+            - containerPort: 8084
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "200m"
+            limits:
+              memory: "768Mi"
+              cpu: "500m"
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: SPRING_PROFILES_ACTIVE
+            - name: SPRING_CONFIG_IMPORT
+              value: "optional:configserver:http://config-service:8888"
+            - name: CONFIG_SERVER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: CONFIG_SERVER_URL
+            - name: PROD_DB_PROPERTY_URL
+              value: "jdbc:mysql://mysql:3306/propertydb?useSSL=false&allowPublicKeyRetrieval=true"
+            - name: DB_USERNAME
+              value: "root"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: db-password
+            - name: JAVA_TOOL_OPTIONS
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: JAVA_TOOL_OPTIONS
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: property-microservice
+  namespace: estate-rental
+  labels: 
+    app: property-microservice
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8084
+  selector:
+    app: property-microservice

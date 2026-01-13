@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-management-service
+  namespace: estate-rental
+spec:
+  template:
+    spec:
+      containers:
+        - name: user-management-service
+          env:
+            - name: PROD_DB_URL
+              value: "jdbc:mysql://rds-endpoint.amazonaws.com:3306/userdb?useSSL=true&allowPublicKeyRetrieval=true"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: property-microservice
+  namespace: estate-rental
+spec:
+  template:
+    spec:
+      containers:
+        - name: property-microservice
+          env:
+            - name: PROD_DB_PROPERTY_URL
+              value: "jdbc:mysql://rds-endpoint.amazonaws.com:3306/propertydb?useSSL=true&allowPublicKeyRetrieval=true"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rental-agreement-microservice
+  namespace: estate-rental
+spec:
+  template:
+    spec:
+      containers:
+        - name: rental-agreement-microservice
+          env:
+            - name: PROD_DB_RENTAL_AGREEMENT_URL
+              value: "jdbc:mysql://rds-endpoint.amazonaws.com:3306/rental_agreement_db?useSSL=true&allowPublicKeyRetrieval=true"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+  namespace: estate-rental
+spec:
+  template:
+    spec:
+      containers:
+        - name: notification-service
+          env:
+            - name: PROD_DB_NOTIFICATION_URL
+              value: "jdbc:mysql://rds-endpoint.amazonaws.com:3306/notifications?useSSL=true&allowPublicKeyRetrieval=true"

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: config-service
+  namespace: estate-rental
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: config-service
+  template:
+    metadata:
+      labels:
+        app: config-service
+    spec:
+      containers:
+        - name: config-service
+          image: yassinekamouss/config-service:latest
+          ports:
+            - containerPort: 8888
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "768Mi" # Harmonized
+              cpu: "500m"
+          env:
+            - name: SPRING_CLOUD_CONFIG_SERVER_GIT_URI
+              value: "https://github.com/ahyahya1616/config-repo-estate-rental" # This is a public repo URL, not sensitive? If sensitive, should be secret. Assuming public or static config.
+            - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_CLOUD_CONFIG
+              value: "DEBUG"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: config-service
+  namespace: estate-rental
+  labels: 
+    app: config-service
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8888
+      targetPort: 8888
+  selector:
+    app: config-service

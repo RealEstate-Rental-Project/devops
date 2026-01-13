@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rental-agreement-microservice
+  namespace: estate-rental
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rental-agreement-microservice
+  template:
+    metadata:
+      labels:
+        app: rental-agreement-microservice
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8083"
+    spec:
+      containers:
+        - name: rental-agreement-microservice
+          image: yassinekamouss/rental-agreement-service:latest
+          ports:
+            - containerPort: 8083
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "200m"
+            limits:
+              memory: "768Mi"
+              cpu: "500m"
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: SPRING_PROFILES_ACTIVE
+            - name: JAVA_TOOL_OPTIONS
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: JAVA_TOOL_OPTIONS
+            - name: SPRING_CONFIG_IMPORT
+              value: "optional:configserver:http://config-service:8888"
+            - name: PROD_DB_RENTAL_AGREEMENT_URL
+              value: "jdbc:mysql://mysql:3306/rental_agreement_db?useSSL=false&allowPublicKeyRetrieval=true"
+            - name: DB_USERNAME
+              value: "root" # Should be secret or config? Usually root is not good for prod. But keeping as is for now, maybe move to secret if I want to be strict. Prompt said "Extrais le mot de passe". Username is less critical but "root" is bad practice. I'll leave it as value for now or move to secret.
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: db-password
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: KAFKA_BOOTSTRAP_SERVERS
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rental-agreement-microservice
+  namespace: estate-rental
+  labels: 
+    app: rental-agreement-microservice
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8083
+      targetPort: 8083
+  selector:
+    app: rental-agreement-microservice
