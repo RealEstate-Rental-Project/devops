@@ -1,68 +1,92 @@
-# Estate Rental Project - Kubernetes Deployment
+# Estate Rental - Cloud-Native Kubernetes Infrastructure
 
-Ce projet a été restructuré pour supporter un déploiement hybride (Local sur Minikube et Cloud sur AWS EKS) en utilisant **Kustomize**.
+Ce dépôt contient l'infrastructure as code (IaC) pour le déploiement de la plateforme **Estate Rental**, orchestrée par Kubernetes. L'architecture repose sur une approche **GitOps** et modulaire grâce à **Kustomize**, garantissant une séparation stricte entre la logique applicative et les spécificités d'environnement (Local vs Cloud AWS).
 
-## Architecture des Dossiers
+## 🏗 Architecture Kustomize (The Source of Truth)
 
-- **k8s/base/** : Contient les manifestes communs (Deployments, Services, ConfigMaps, Secrets).
-    - Les Services sont de type `ClusterIP`.
-    - Les configurations sont externalisées dans `configmap.yaml` et `secret.yaml`.
-- **k8s/overlays/minikube/** : Configuration pour le développement local.
-    - Patch les services Gateway et Frontend en `NodePort`.
-    - Inclut l'infrastructure locale (MySQL, Kafka, Zookeeper).
-- **k8s/overlays/eks/** : Configuration pour AWS EKS.
-    - Prépare l'Ingress (ALB Controller).
-    - Configure les endpoints RDS via des patches.
-- **k8s/monitoring/** : Configuration Prometheus/Grafana (ServiceMonitor).
+Nous utilisons **Kustomize** pour gérer la complexité des manifestes Kubernetes sans duplication de code. L'architecture est divisée en deux couches :
 
-## Prérequis
+### 1. `base/` : Le Cœur Immuable
+Ce dossier contient la définition "pure" des microservices, indépendante de l'environnement de déploiement.
+- **Deployments** : Chaque microservice est configuré avec des **Resource Limits** strictes (ex: `768Mi` RAM) pour garantir la stabilité des nœuds et éviter le OOMKill.
+- **Services** : Exposés uniquement en `ClusterIP` pour la communication interne sécurisée.
+- **Observabilité** : Les annotations Prometheus (`prometheus.io/scrape: "true"`) sont intégrées nativement pour permettre le scraping des métriques JVM.
 
-- Kubernetes Cluster (Minikube ou EKS)
-- `kubectl` installé
-- `kustomize` (intégré à kubectl depuis v1.14)
+### 2. `overlays/` : L'Adaptation Contextuelle
+Ce dossier applique des patches (modifications) sur la base pour s'adapter à la cible de déploiement.
 
-## Déploiement
+#### 🛠 `overlays/minikube/` (Environnement de Développement)
+Conçu pour une itération rapide en local.
+- **Exposition** : Patch les services Gateway et Frontend en `type: NodePort` pour un accès direct depuis la machine hôte.
+- **Infrastructure Locale** : Déploie les dépendances stateful (MySQL, Kafka, Zookeeper) sous forme de conteneurs dans le cluster.
+- **Configuration Dynamique** : Un patch ConfigMap injecte l'IP dynamique du Frontend pour gérer les problèmes de CORS et de redirection en local.
 
-### 1. Local (Minikube)
+#### ☁️ `overlays/eks/` (Production AWS)
+Configuration "Cloud-Ready" pour Amazon EKS.
+- **Ingress Controller** : Utilise **AWS Load Balancer Controller** (ALB) pour gérer le trafic entrant de manière scalable et sécurisée.
+- **Services Managés** : Remplace les conteneurs de base de données par des endpoints pointant vers **Amazon RDS** et **Amazon MSK** via des patches d'environnement.
 
-Pour déployer l'application complète avec l'infrastructure locale :
+---
 
+## 🔭 Observabilité & Monitoring
+
+La stack de monitoring est isolée dans le dossier `monitoring/` et repose sur le standard **Prometheus Operator**.
+
+### ServiceMonitor & Auto-Découverte
+Le fichier `microservices-monitoring.yaml` définit un **ServiceMonitor** qui cible automatiquement les 6 microservices majeurs du projet.
+- **Mécanisme** : Il scanne tous les Services portant le label `app` correspondant et le port nommé `http`.
+- **Port `http`** : Il est CRITIQUE que chaque Service dans `base/` nomme son port `http` (et non juste 8080) pour que le ServiceMonitor puisse identifier la cible de scraping.
+
+### Dashboards Grafana
+Les métriques exposées par **Micrometer** sont visualisables dans Grafana.
+- **Dashboard Recommandé** : JVM (Micrometer) - **ID 4701**.
+- **Indicateurs Clés** : Utilisation Heap/Non-Heap, GC Pauses, Threads, et Uptime.
+
+---
+
+## 🔐 Configuration & Sécurité (Zero-Hardcoding)
+
+L'infrastructure respecte le principe de **Zero-Hardcoding** pour faciliter la maintenance et la sécurité.
+
+- **ConfigMaps** : Centralisent les configurations non-sensibles (URLs des services, profils Spring, options JVM).
+    - *Note* : Dans l'overlay Minikube, l'URL du Frontend est patchée dynamiquement pour correspondre à l'IP du cluster local.
+- **Secrets** : Les identifiants de base de données et mots de passe sont extraits dans des objets `Secret` Kubernetes.
+    - *Sécurité* : En production, ces secrets doivent être synchronisés depuis un vault externe (ex: AWS Secrets Manager) via ExternalSecrets Operator.
+
+---
+
+## 🚀 Guide d'Exécution
+
+### Prérequis
+- Cluster Kubernetes (Minikube ou EKS)
+- `kubectl` configuré
+
+### Déploiement
+
+#### 1. Environnement Local (Minikube)
+Déploie l'application avec l'infrastructure locale et les accès NodePort.
 ```bash
 kubectl apply -k k8s/overlays/minikube
 ```
 
-**Accès :**
-- Frontend : `http://<minikube-ip>:30420`
-- Gateway : `http://<minikube-ip>:30080`
-
-### 2. AWS (EKS)
-
-Pour déployer sur EKS (nécessite un cluster EKS avec ALB Controller configuré) :
-
-1. Mettre à jour `k8s/overlays/eks/patch-db-endpoint.yaml` avec vos endpoints RDS réels.
-2. Appliquer la configuration :
-
+#### 2. Environnement Cloud (AWS EKS)
+Déploie l'application connectée aux services managés AWS.
 ```bash
 kubectl apply -k k8s/overlays/eks
 ```
 
-## Gestion des Secrets
-
-> [!WARNING]
-> Les secrets (mots de passe DB) sont actuellement stockés encodés en base64 dans `k8s/base/secret.yaml`.
-> **POUR LA PRODUCTION** : Il est impératif d'utiliser une solution sécurisée comme AWS Secrets Manager, HashiCorp Vault ou SealedSecrets, et de ne pas commiter ce fichier dans le dépôt public.
-
-## Monitoring
-
-Pour activer le monitoring (nécessite Prometheus Operator) :
-
+#### 3. Monitoring
+Active la collecte des métriques (nécessite Prometheus Operator installé).
 ```bash
 kubectl apply -k k8s/monitoring
 ```
 
-## Roadmap AWS EKS
+### ✅ Vérification
 
-1. **Base de Données** : Migrer MySQL local vers Amazon RDS. Mettre à jour les endpoints dans `k8s/overlays/eks/patch-db-endpoint.yaml`.
-2. **Ingress** : Configurer AWS Load Balancer Controller pour gérer l'Ingress défini dans `k8s/overlays/eks/ingress.yaml`.
-3. **Sécurité** : Remplacer `base/secret.yaml` par ExternalSecrets Operator couplé à AWS Secrets Manager.
-4. **Scaling** : Ajuster les `resources.limits` et configurer Horizontal Pod Autoscaler (HPA) pour les microservices critiques.
+Pour valider que le monitoring fonctionne correctement :
+1. Accédez à l'interface Prometheus (via port-forward).
+2. Allez dans **Status > Targets**.
+3. Vérifiez que les endpoints des microservices (gateway, auth, user, etc.) sont en état **UP**.
+
+---
+*Document généré par l'équipe SRE - Estate Rental Project*
