@@ -50,7 +50,10 @@ spec:
             - name: PROD_DB_NOTIFICATION_URL
               value: "jdbc:mysql://mysql:3306/notifications?useSSL=false&allowPublicKeyRetrieval=true"
             - name: PROD_DB_USERNAME
-              value: "root"
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DB_USERNAME
             - name: PROD_DB_PASSWORD
               valueFrom:
                 secretKeyRef:

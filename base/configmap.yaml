@@ -15,3 +15,4 @@ data:
   # Default frontend URL, override in overlays if needed
   FRONTEND_URL: "http://frontend-service:80" 
   KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+  DB_USERNAME: "admin"

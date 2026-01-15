@@ -35,23 +35,9 @@ spec:
                   name: app-config
                   key: SPRING_PROFILES_ACTIVE
             - name: SPRING_CONFIG_IMPORT
-              value: "optional:configserver:http://config-service:8888" # Keeping this hardcoded or use env var expansion if supported, but usually config import is tricky. However, I can use valueFrom if I put the whole string in ConfigMap. Let's use the ConfigMap value if possible, or construct it. The ConfigMap has CONFIG_SERVER_URL. But SPRING_CONFIG_IMPORT needs the prefix. I'll leave it as value with the variable if I can, but k8s doesn't support variable expansion in value easily without a command wrapper.
-              # Wait, I can put "optional:configserver:http://config-service:8888" in ConfigMap as a separate key or just hardcode the service name since it's internal.
-              # Actually, the prompt says "Centralise les URLs...".
-              # I'll put "optional:configserver:http://config-service:8888" in ConfigMap as CONFIG_IMPORT_URL?
-              # Or just leave it hardcoded as it points to the service name which is stable in `base`.
-              # Let's check if I can use valueFrom. Yes.
-              # I'll add CONFIG_IMPORT_VALUE to ConfigMap?
-              # Or just use `value: "optional:configserver:http://config-service:8888"` because `config-service` is the K8s service name.
-              # The prompt says "Retire toutes les valeurs codées en dur (mots de passe, IPs spécifiques)". Service names are not IPs.
-              # But "http://config-service:8888" is in ConfigMap as CONFIG_SERVER_URL.
-              # I'll stick to hardcoding the service name here as it's structural, or add a new key to ConfigMap.
-              # Let's add `SPRING_CONFIG_IMPORT_VALUE` to ConfigMap later if needed. For now, I'll keep it hardcoded as it's not an IP or password.
-              # Wait, `auth-server-k8s.yaml` had `value: "optional:configserver:http://config-service:8888"`.
-              # I will leave it for now or use `$(CONFIG_SERVER_URL)` if I use command.
-              # Let's just hardcode the service name, it's safe.
+              value: "optional:configserver:http://config-service:8888" 
             - name: USER_URI
-              value: "user-management-service:8081" # Service name, safe.
+              value: "user-management-service:8081" 
             - name: JWT_ISSUER
               valueFrom:
                 configMapKeyRef:

@@ -4,8 +4,6 @@ kind: Kustomization
 resources:
   - ../../base
   - mysql-k8s.yaml
-  - kafka-k8s.yaml
-  - zookeeper-k8s.yaml
 
 patches:
   - path: gateway-nodeport.yaml

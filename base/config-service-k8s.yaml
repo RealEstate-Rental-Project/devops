@@ -23,11 +23,11 @@ spec:
               memory: "512Mi"
               cpu: "250m"
             limits:
-              memory: "768Mi" # Harmonized
+              memory: "768Mi" 
               cpu: "500m"
           env:
             - name: SPRING_CLOUD_CONFIG_SERVER_GIT_URI
-              value: "https://github.com/ahyahya1616/config-repo-estate-rental" # This is a public repo URL, not sensitive? If sensitive, should be secret. Assuming public or static config.
+              value: "https://github.com/ahyahya1616/config-repo-estate-rental" 
             - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_CLOUD_CONFIG
               value: "DEBUG"
 ---

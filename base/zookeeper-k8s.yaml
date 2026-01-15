@@ -4,7 +4,6 @@ metadata:
   name: zookeeper
   namespace: estate-rental
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: zookeeper
@@ -15,14 +14,16 @@ spec:
     spec:
       containers:
       - name: zookeeper
-        image: confluentinc/cp-zookeeper:7.5.0
+        image: wurstmeister/zookeeper:latest
         ports:
         - containerPort: 2181
-        env:
-        - name: ZOOKEEPER_CLIENT_PORT
-          value: "2181"
-        - name: ZOOKEEPER_TICK_TIME
-          value: "2000"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
 ---
 apiVersion: v1
 kind: Service

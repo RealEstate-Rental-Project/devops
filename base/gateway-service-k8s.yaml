@@ -74,11 +74,8 @@ spec:
                 configMapKeyRef:
                   name: app-config
                   key: JAVA_TOOL_OPTIONS
-            - name: SPRING_CLOUD_GATEWAY_GLOBALCORS_CORS_CONFIGURATIONS_[/**]_ALLOWEDORIGINS[0]
-              valueFrom:
-                configMapKeyRef:
-                  name: app-config
-                  key: FRONTEND_URL
+            - name: SPRING_APPLICATION_JSON
+              value: '{"spring.cloud.gateway.globalcors.cors-configurations.[/**].allowed-origins[0]": "$(FRONTEND_URL)"}'
 ---
 apiVersion: v1
 kind: Service

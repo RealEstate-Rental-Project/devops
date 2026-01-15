@@ -1,3 +1,7 @@
+# ======================================================================================
+# NOTE: This Ingress configuration is the TARGET configuration for Production.
+# Currently disabled in kustomization.yaml due to pending AWS LoadBalancer support issues.
+# ======================================================================================
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

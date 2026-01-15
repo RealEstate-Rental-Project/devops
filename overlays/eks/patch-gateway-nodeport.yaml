@@ -1,0 +1,12 @@
+# ======================================================================================
+# TEMPORARY PATCH: Switch Gateway to NodePort
+# Used for testing connectivity while AWS ALB issues are being resolved.
+# This bypasses the Ingress and exposes the service directly on a Node port.
+# ======================================================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service
+  namespace: estate-rental
+spec:
+  type: NodePort

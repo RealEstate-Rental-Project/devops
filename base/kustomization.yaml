@@ -13,3 +13,5 @@ resources:
   - public-app-k8s.yaml
   - rental-agreement-microservice-k8s.yaml
   - user-service-k8s.yaml
+  - zookeeper-k8s.yaml
+  - kafka-k8s.yaml

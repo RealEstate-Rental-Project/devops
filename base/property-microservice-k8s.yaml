@@ -44,7 +44,10 @@ spec:
             - name: PROD_DB_PROPERTY_URL
               value: "jdbc:mysql://mysql:3306/propertydb?useSSL=false&allowPublicKeyRetrieval=true"
             - name: DB_USERNAME
-              value: "root"
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DB_USERNAME
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:

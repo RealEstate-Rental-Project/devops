@@ -40,7 +40,15 @@ spec:
                   name: app-config
                   key: CONFIG_SERVER_URL
             - name: PROD_DB_URL
-              value: "jdbc:mysql://mysql:3306/userdb?useSSL=false&allowPublicKeyRetrieval=true"
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: PROD_DB_URL
+            - name: PROD_DB_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DB_USERNAME
             - name: PROD_DB_PASSWORD
               valueFrom:
                 secretKeyRef:

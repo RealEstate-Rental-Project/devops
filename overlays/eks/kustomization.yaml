@@ -3,9 +3,14 @@ kind: Kustomization
 
 resources:
   - ../../base
-  - ingress.yaml
+  # [TEMPORARY] Ingress is disabled due to AWS LoadBalancer issues.
+  # Uncomment the line below once AWS support resolves the issue.
+  # - ingress.yaml
 
 patches:
+  # [TEMPORARY] Switch Gateway to NodePort for testing while waiting for ALB fix.
+  # Remove this patch when re-enabling Ingress.
+  - path: patch-gateway-nodeport.yaml
   - path: patch-db-endpoint.yaml
   - patch: |-
       apiVersion: v1
