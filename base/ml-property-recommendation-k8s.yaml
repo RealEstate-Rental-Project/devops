@@ -11,11 +11,6 @@ spec:
     metadata:
       labels:
         app: property-recommendation-engine
-      annotations:
-        # Configuration pour le monitoring Prometheus
-        prometheus.io/scrape: "true"
-        prometheus.io/path: "/metrics"
-        prometheus.io/port: "8000"
     spec:
       containers:
         - name: property-recommendation-engine
