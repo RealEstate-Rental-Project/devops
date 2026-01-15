@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-price-suggestion
+  namespace: estate-rental
+spec:
+  selector:
+    matchLabels:
+      app: ml-price-suggestion
+  template:
+    metadata:
+      labels:
+        app: ml-price-suggestion
+      annotations:
+        # Configuration pour le monitoring automatique via Prometheus
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8000"
+    spec:
+      containers:
+        - name: ml-price-suggestion
+          image: saaymo/ml-pricesuggestionmodel:latest
+          ports:
+            - containerPort: 8000
+          resources:
+            # Ressources augmentées pour supporter le chargement de plusieurs modèles Joblib
+            requests:
+              memory: "512Mi"
+              cpu: "200m"
+            limits:
+              memory: "768Mi"
+              cpu: "500m"
+          env:
+            - name: APP_NAME
+              value: "price-suggestion-ai"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ml-price-suggestion-service
+  namespace: estate-rental
+  labels: 
+    app: ml-price-suggestion
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+  selector:
+    app: ml-price-suggestion
