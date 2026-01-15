@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tenant-risk-scoring
+  namespace: estate-rental
+spec:
+  selector:
+    matchLabels:
+      app: tenant-risk-scoring
+  template:
+    metadata:
+      labels:
+        app: tenant-risk-scoring
+      annotations:
+        # Configuration pour Prometheus (si votre API expose /metrics)
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8000"
+    spec:
+      containers:
+        - name: tenant-risk-scoring
+          image: saaymo/tenant-risk-scoring-randomforestclassifier:latest
+          ports:
+            - containerPort: 8000
+          resources:
+            # On suit la logique de vos microservices Java mais avec des limites adaptées à l'IA
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "300m"
+          env:
+            # On réutilise les options JVM si nécessaire ou d'autres configs globales
+            - name: APP_NAME
+              value: "tenant-risk-ai"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tenant-risk-scoring-service
+  namespace: estate-rental
+  labels: 
+    app: tenant-risk-scoring
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+  selector:
+    app: tenant-risk-scoring
