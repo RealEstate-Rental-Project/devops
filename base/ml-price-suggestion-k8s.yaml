@@ -11,11 +11,6 @@ spec:
     metadata:
       labels:
         app: ml-price-suggestion
-      annotations:
-        # Configuration pour le monitoring automatique via Prometheus
-        prometheus.io/scrape: "true"
-        prometheus.io/path: "/actuator/prometheus"
-        prometheus.io/port: "8000"
     spec:
       containers:
         - name: ml-price-suggestion
