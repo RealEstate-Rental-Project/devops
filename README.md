@@ -2,7 +2,18 @@
 
 Ce dépôt contient l'infrastructure as code (IaC) pour le déploiement de la plateforme **Estate Rental**, orchestrée par Kubernetes. L'architecture repose sur une approche **GitOps** et modulaire grâce à **Kustomize**, garantissant une séparation stricte entre la logique applicative et les spécificités d'environnement (Local vs Cloud AWS).
 
-## 🏗 Architecture Kustomize (The Source of Truth)
+## � Global Architecture & Pipeline
+
+Cette section illustre le flux complet de l'application **Estate Rental**, intégrant l'ensemble des composants du système :
+- **Frontend** : Interface utilisateur interactive.
+- **Microservices** : Logique métier distribuée (Auth, User, Property, etc.).
+- **AI Models** : Intégration des modèles d'intelligence artificielle pour les fonctionnalités avancées.
+
+![Global Pipeline Diagram](./docs/pipeline_diagram_final.png)
+
+---
+
+## �🏗 Architecture Kustomize (The Source of Truth)
 
 Nous utilisons **Kustomize** pour gérer la complexité des manifestes Kubernetes sans duplication de code. L'architecture est divisée en deux couches :
 
