@@ -12,11 +12,6 @@ spec:
     metadata:
       labels:
         app: predictive-heatmaps
-      annotations:
-        # Configuration pour le monitoring Prometheus (Metrics scraping)
-        prometheus.io/scrape: "true"
-        prometheus.io/path: "/metrics"
-        prometheus.io/port: "8000"
     spec:
       containers:
         - name: predictive-heatmaps
