@@ -58,6 +58,14 @@ spec:
                 configMapKeyRef:
                   name: app-config
                   key: JAVA_TOOL_OPTIONS
+            - name: RECOMENDATION_IA_URL
+              value: "http://property-recommendation-service:8000"
+            - name: HEATMAP_SERVICE_URL
+              value: "http://predictive-heatmaps-service:8000"
+            - name: ML_PRICE_SUGGESTION_URL
+              value: "http://ml-price-suggestion-service:8000"
+            - name: USER_MANAGEMENT_SERVICE_URL
+              value: "http://user-management-service:8081"
 ---
 apiVersion: v1
 kind: Service

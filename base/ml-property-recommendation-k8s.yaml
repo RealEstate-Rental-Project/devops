@@ -16,8 +16,19 @@ spec:
         - name: property-recommendation-engine
           # Utilisation de l'image corrigée suite à notre discussion précédente
           image: saaymo/property-recommendation-engine-k-means-cosine-similarity:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
+          livenessProbe:
+            tcpSocket:
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
           resources:
             # Ressources optimisées pour le calcul de similarité cosinus en mémoire
             requests:

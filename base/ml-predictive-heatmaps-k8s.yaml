@@ -16,8 +16,19 @@ spec:
       containers:
         - name: predictive-heatmaps
           image: saaymo/predictive-heatmaps-of-neighborhood-price-evolution:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
+          livenessProbe:
+            tcpSocket:
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
           resources:
             # Ressources ajustées pour supporter la matrice de caractéristiques .npy en mémoire
             requests:

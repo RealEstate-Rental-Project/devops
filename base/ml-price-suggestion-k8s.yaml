@@ -15,8 +15,19 @@ spec:
       containers:
         - name: ml-price-suggestion
           image: saaymo/ml-pricesuggestionmodel:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
+          livenessProbe:
+            tcpSocket:
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
           resources:
             # Ressources augmentées pour supporter le chargement de plusieurs modèles Joblib
             requests:
