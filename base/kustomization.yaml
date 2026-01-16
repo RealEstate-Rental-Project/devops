@@ -15,3 +15,7 @@ resources:
   - user-service-k8s.yaml
   - zookeeper-k8s.yaml
   - kafka-k8s.yaml
+  - ml-predictive-heatmaps-k8s.yaml
+  - ml-price-suggestion-k8s.yaml
+  - ml-property-recommendation-k8s.yaml
+  - ml-tenant-risk-scoring-k8s.yaml

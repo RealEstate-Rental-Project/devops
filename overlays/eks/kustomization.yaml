@@ -18,4 +18,4 @@ patches:
         name: app-config
         namespace: estate-rental
       data:
-        FRONTEND_URL: "http://k8s-estatere-estatere-ff3c605b78-17782650.eu-west-1.elb.amazonaws.com"
+        FRONTEND_URL: "http://k8s-estatere-estatere-ff3c605b78-1110432540.eu-west-1.elb.amazonaws.com"

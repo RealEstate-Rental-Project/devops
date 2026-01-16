@@ -18,15 +18,15 @@ spec:
           image: saaymo/predictive-heatmaps-of-neighborhood-price-evolution:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 8000
+            - containerPort: 8002
           livenessProbe:
             tcpSocket:
-              port: 8000
+              port: 8002
             initialDelaySeconds: 30
             periodSeconds: 10
           readinessProbe:
             tcpSocket:
-              port: 8000
+              port: 8002
             initialDelaySeconds: 10
             periodSeconds: 5
           resources:
@@ -55,6 +55,6 @@ spec:
   ports:
     - name: http
       port: 8000
-      targetPort: 8000
+      targetPort: 8002
   selector:
     app: predictive-heatmaps

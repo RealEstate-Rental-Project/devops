@@ -11,7 +11,7 @@ spec:
         - name: user-management-service
           env:
             - name: PROD_DB_URL
-              value: "terraform-20260115224045509500000006.c10ci200ieid.eu-north-1.rds.amazonaws.com:3306/userdb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true"
+              value: "jdbc:mysql://terraform-20260116032048302200000006.cxygs8q2yxuh.eu-west-1.rds.amazonaws.com:3306/userdb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true"
               valueFrom: null
             - name: PROD_DB_USERNAME
               value: "admin"
@@ -29,7 +29,7 @@ spec:
         - name: property-microservice
           env:
             - name: PROD_DB_PROPERTY_URL
-              value: "terraform-20260115224045509500000006.c10ci200ieid.eu-north-1.rds.amazonaws.com:3306/propertydb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true"
+              value: "jdbc:mysql://terraform-20260116032048302200000006.cxygs8q2yxuh.eu-west-1.rds.amazonaws.com:3306/propertydb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true"
             - name: DB_USERNAME
               value: "admin"
               valueFrom: null
@@ -46,7 +46,7 @@ spec:
         - name: rental-agreement-microservice
           env:
             - name: PROD_DB_RENTAL_AGREEMENT_URL
-              value: "terraform-20260115224045509500000006.c10ci200ieid.eu-north-1.rds.amazonaws.com:3306/rental_agreement_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true"
+              value: "jdbc:mysql://terraform-20260116032048302200000006.cxygs8q2yxuh.eu-west-1.rds.amazonaws.com:3306/rental_agreement_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true"
             - name: DB_USERNAME
               value: "admin"
               valueFrom: null
@@ -63,7 +63,7 @@ spec:
         - name: notification-service
           env:
             - name: PROD_DB_NOTIFICATION_URL
-              value: "terraform-20260115224045509500000006.c10ci200ieid.eu-north-1.rds.amazonaws.com:3306/notifications?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true"
+              value: "jdbc:mysql://terraform-20260116032048302200000006.cxygs8q2yxuh.eu-west-1.rds.amazonaws.com:3306/notifications?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true"
             - name: PROD_DB_USERNAME
               value: "admin"
               valueFrom: null

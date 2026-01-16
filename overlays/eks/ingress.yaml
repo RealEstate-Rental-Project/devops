@@ -15,7 +15,6 @@ metadata:
     # nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: alb
-  # ingressClassName: nginx
   rules:
     - http:
         paths:
