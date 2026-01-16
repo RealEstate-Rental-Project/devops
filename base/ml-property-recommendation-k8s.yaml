@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: property-recommendation-engine
+  namespace: estate-rental
+spec:
+  selector:
+    matchLabels:
+      app: property-recommendation-engine
+  template:
+    metadata:
+      labels:
+        app: property-recommendation-engine
+    spec:
+      containers:
+        - name: property-recommendation-engine
+          # Utilisation de l'image corrigée suite à notre discussion précédente
+          image: saaymo/property-recommendation-engine-k-means-cosine-similarity:latest
+          ports:
+            - containerPort: 8000
+          resources:
+            # Ressources optimisées pour le calcul de similarité cosinus en mémoire
+            requests:
+              memory: "384Mi"
+              cpu: "150m"
+            limits:
+              memory: "512Mi"
+              cpu: "400m"
+          env:
+            - name: APP_NAME
+              value: "recommendation-engine-ai"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: property-recommendation-service
+  namespace: estate-rental
+  labels: 
+    app: property-recommendation-engine
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+  selector:
+    app: property-recommendation-engine

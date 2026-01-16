@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: predictive-heatmaps
+  namespace: estate-rental
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: predictive-heatmaps
+  template:
+    metadata:
+      labels:
+        app: predictive-heatmaps
+    spec:
+      containers:
+        - name: predictive-heatmaps
+          image: saaymo/predictive-heatmaps-of-neighborhood-price-evolution:latest
+          ports:
+            - containerPort: 8000
+          resources:
+            # Ressources ajustées pour supporter la matrice de caractéristiques .npy en mémoire
+            requests:
+              memory: "384Mi"
+              cpu: "150m"
+            limits:
+              memory: "512Mi"
+              cpu: "400m"
+          env:
+            - name: APP_NAME
+              value: "neighborhood-heatmap-ai"
+            - name: PYTHONPATH
+              value: "/app/model/app"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: predictive-heatmaps-service
+  namespace: estate-rental
+  labels: 
+    app: predictive-heatmaps
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+  selector:
+    app: predictive-heatmaps
