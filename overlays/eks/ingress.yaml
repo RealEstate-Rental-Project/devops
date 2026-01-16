@@ -12,8 +12,10 @@ metadata:
     alb.ingress.kubernetes.io/target-type: ip
     # --- OPTIMISATION : Gérer les groupes de sécurité AWS automatiquement ---
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    # nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: alb
+  # ingressClassName: nginx
   rules:
     - http:
         paths:
